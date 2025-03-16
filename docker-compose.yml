@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    restart: always
+    environment:
+      POSTGRES_DB: todolist
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123123Jay
+    ports:
+      - "5432:5432"
+    networks:
+      - pg_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: jaytanet@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: 123123Jay
+    ports:
+      - "5050:80"
+    networks:
+      - pg_network
+    depends_on:
+      - postgres
+
+networks:
+  pg_network:
+
+volumes:
+  postgres_data:
