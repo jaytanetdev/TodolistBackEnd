@@ -6,12 +6,15 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { UsersModule } from './modules/users/users.module';
 import { TodoModule } from './modules/todo/todo.module';
+import { AuthModule } from './modules/auth/auth.module';
+import authConfig from './config/auth.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      load: [authConfig],
     }),
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -34,6 +37,7 @@ import { TodoModule } from './modules/todo/todo.module';
     }),
     UsersModule,
     TodoModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

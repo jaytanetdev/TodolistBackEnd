@@ -5,10 +5,11 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import helmet from 'helmet';
 import { useContainer } from 'class-validator'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+import { ConfigService } from '@nestjs/config'
+import { TAuthConfig } from './config/auth.config';
+
 const compression = require('compression');
-
-
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     abortOnError: false,
@@ -38,7 +39,10 @@ async function bootstrap() {
       stopAtFirstError: true,
     }),
   );
-
+  const configSvc = app.get(ConfigService)
+  const authConfig = configSvc.get<TAuthConfig>('auth')
+  app.use(cookieParser(authConfig?.cookie.signedSecret))
+  
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -60,6 +64,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
+
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, documentFactory, {
     url: 'doc',
@@ -70,7 +75,7 @@ async function bootstrap() {
   app.getHttpAdapter().getInstance().set('etag', false)
   useContainer(app.select(AppModule), { fallbackOnErrors: true })
   
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 5000);
 }
 bootstrap().catch((err) => {
   console.log(err)

@@ -7,29 +7,44 @@ import {
   Param,
   Delete,
   Query,
+  HttpStatus,
+  HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
-import {  CreateTodoRequestDto, CreateTodoResponseDto } from './dto/create-todo.dto';
+import {
+  CreateTodoRequestDto,
+  CreateTodoResponseDto,
+} from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { Todo } from './entities/todo.entity';
-
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from 'src/decorators/current-user.decorator';
+import ICurrentUser from '../auth/interfaces/current-user.interface';
 @Controller('todo')
+@UseGuards(JwtAuthGuard)
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'add todolist' })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'Todo Created Successfully',
     type: CreateTodoResponseDto,
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
+  })
   async create(
+    @CurrentUser() user: ICurrentUser,
     @Body() createTodoDto: CreateTodoRequestDto,
   ): Promise<CreateTodoResponseDto> {
-    const todo = await this.todoService.create(createTodoDto);
-    return new CreateTodoResponseDto(todo)
+    const todo = await this.todoService.create(user, createTodoDto);
+    return new CreateTodoResponseDto(todo);
   }
 
   // @Post('/')
@@ -43,9 +58,6 @@ export class TodoController {
   //   const result = await this.myProductSvc.createMyProduct(user, body, locale)
   //   return new CreateMyProductResponseDto(result)
   // }
-
-
-
 
   @Get()
   @ApiOperation({ summary: 'Get all todos with pagination' })
@@ -76,11 +88,11 @@ export class TodoController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get  todos by ID' })
-  async findOne(@Param('id') id: string): Promise<{
+  async findOne(@CurrentUser() user: ICurrentUser): Promise<{
     success: boolean;
     result: Todo[];
   }> {
-    const { result } = await this.todoService.findOne(id);
+    const { result } = await this.todoService.findOne(user);
     return {
       success: true,
       result,

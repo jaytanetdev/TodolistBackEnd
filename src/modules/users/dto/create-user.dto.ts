@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsString,
@@ -8,6 +8,8 @@ import {
   Matches,
   MinLength,
 } from 'class-validator';
+import { BaseResponse } from 'src/core/base-response';
+import { assignIgnoreUndefined } from 'src/utils/object';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -37,9 +39,9 @@ export class CreateUserDto {
   @MinLength(3)
   @MaxLength(30)
   @Matches(/^[A-Za-z0-9]+$/, {
-    message: 'username can only contain letters (A-Z, a-z), digits (0-9)',
+    message: 'email can only contain letters (A-Z, a-z), digits (0-9)',
   })
-  username: string;
+  email: string;
 
   @ApiProperty({
     example: 'StrongP@ssw0rd123',
@@ -50,51 +52,51 @@ export class CreateUserDto {
   passwordHash: string;
 }
 
-// export class CreateUsersDto {
-//   @ApiProperty({
-//     example: '79E93CEA-A31B-45FD-9455-8E98C1C5972F',
-//     type: String,
-//   })
-//   @Expose()
-//   id: string
 
-//   @ApiProperty({
-//     example: 'RZ-D10WF',
-//     type: String,
-//   })
-//   @Expose()
-//   modelNumber: string
+export class CreateUserResultDto {
+  @ApiProperty({
+    example: '79E93CEA-A31B-45FD-9455-8E98C1C5972F',
+    type: String,
+  })
+  @Expose()
+  id: string;
 
-//   @ApiProperty({
-//     example: 'SNKG18YTH',
-//     type: String,
-//   })
-//   @Expose()
-//   serialNumber: string
+  @ApiProperty({
+    example: 'jay',
+    type: String,
+  })
+  @Expose()
+  firstName: string;
 
-//   @ApiProperty({
-//     example: '2024-10-14T09:28:58.213Z',
-//     type: Date,
-//   })
-//   @Expose()
-//   purchaseDate: Date
+  
+  @ApiProperty({
+    example: 'limsumang',
+    type: String,
+  })
+  @Expose()
+  lastName: string;
 
-//   @ApiProperty({
-//     example: 'The Mall Lifestore Bangkapi',
-//     type: String,
-//   })
-//   @Expose()
-//   purchaseLocation: string
 
-//   @ApiProperty({
-//     type: Number,
-//   })
-//   @Expose()
-//   reviewRate: number
+  @ApiProperty({
+    example: 'jaytanet',
+    type: String,
+  })
+  @Expose()
+  email: string;
 
-//   @ApiProperty({
-//     type: String,
-//   })
-//   @Expose()
-//   reviewContent: string
-// }
+}
+
+export class CreatUserResponseDto extends BaseResponse {
+  @ApiProperty({
+    type: CreateUserResultDto,
+  })
+  @Expose()
+  @Type(() => CreateUserResultDto)
+  result: CreateUserResultDto
+
+  constructor(partial?: Partial<CreatUserResponseDto>) {
+    super(partial)
+    assignIgnoreUndefined(this, partial)
+  }
+}
+

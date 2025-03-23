@@ -1,19 +1,21 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, EntityRepositoryType, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { v4 as uuidV4 } from 'uuid';
-
+import { UserRepository } from '../repositories/user.repo'
+import { AuthMethod } from 'src/modules/auth/entities/auth-method.entity';
 @Entity()
 export class User {
+  [EntityRepositoryType]?: UserRepository
   @PrimaryKey({ type: 'uuid' })
-  id?: string;
+  id: string;
 
   @Property({ type: 'text' })
-  firstName?: string;
+  firstName: string;
 
   @Property({ type: 'text' })
-  lastName?: string;
+  lastName: string;
 
   @Property({ type: 'text' })
-  username?: string;
+  email: string;
 
   @Property({ type: 'text', length: 2000 })
   passwordHash: string
@@ -30,12 +32,13 @@ export class User {
   @Property({ type: 'text', nullable: true })
   refreshToken?: string;
 
+  @OneToMany(() => AuthMethod, (authMethod) => authMethod.user)
+  authMethods? = new Collection<AuthMethod>(this, undefined, true)
+
+
   constructor(dto?: Partial<User>) {
     this.id = uuidV4().toUpperCase();
-    this.firstName = dto?.firstName;
-    this.username = dto?.username;
-    this.passwordHash = dto?.passwordHash ?? '';
-    this.isActive = dto?.isActive ?? false;
+    this.isActive = dto?.isActive ?? true;
     this.createdAt = new Date();
     this.updatedAt = new Date();
   }

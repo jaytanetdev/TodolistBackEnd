@@ -1,34 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTodoRequestDto, CreateTodoResponseDto } from './dto/create-todo.dto';
+import {
+  CreateTodoRequestDto,
+  CreateTodoResponseDto,
+} from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { EntityManager } from '@mikro-orm/core';
 import { Todo } from './entities/todo.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { TodoRepository } from './repositories/user-product.repo';
+import ICurrentUser from '../auth/interfaces/current-user.interface';
 
 @Injectable()
 export class TodoService {
-  constructor(
-    @InjectRepository(Todo)
-    private readonly todoRepository: TodoRepository,
-    private readonly em: EntityManager,
-  ) {}
+  constructor(private readonly todoRepository: TodoRepository) {}
 
-  async create(createTodoDto: CreateTodoRequestDto): Promise<CreateTodoResponseDto> {
-
+  async create(
+    user: ICurrentUser,
+    createTodoDto: CreateTodoRequestDto,
+  ): Promise<CreateTodoResponseDto> {
     const result = this.todoRepository.create({
-      uuidUser: createTodoDto.uuidUser,
+      uuidUser: user.id,
       title: createTodoDto.title,
       dateTodoStart: createTodoDto.dateTodoStart,
       dateTodoEnd: createTodoDto.dateTodoEnd,
     });
-  
-    await this.em.persistAndFlush(result);
-  
+
+    await this.todoRepository.getEntityManager().persistAndFlush(result);
+
     return {
       success: true,
       result: {
-        id:result.id,
+        id: result.id,
         uuidUser: result.uuidUser,
         title: result.title,
         dateTodoStart: result.dateTodoStart,
@@ -36,14 +38,12 @@ export class TodoService {
       },
     };
   }
-  
 
   async findAll(
     page: number,
     limit: number,
   ): Promise<{ result: Todo[]; totalItemSize: number }> {
-    const [result, totalItemSize] = await this.em.findAndCount(
-      Todo,
+    const [result, totalItemSize] = await this.todoRepository.findAndCount(
       {},
       {
         limit,
@@ -54,11 +54,9 @@ export class TodoService {
     return { result, totalItemSize };
   }
 
-  async findOne(
-    id: string,
-  ): Promise<{ result: Todo[]; }> {
-    const result = await this.em.find(Todo, { uuidUser: id });
-    return  {result} ;
+  async findOne(user: ICurrentUser): Promise<{ result: Todo[] }> {
+    const result = await this.todoRepository.find({ uuidUser: user.id });
+    return { result };
   }
 
   update(id: number, updateTodoDto: UpdateTodoDto) {
