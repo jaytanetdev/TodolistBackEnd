@@ -2,11 +2,16 @@ import { Collection, Entity, EntityRepositoryType, OneToMany, PrimaryKey, Proper
 import { v4 as uuidV4 } from 'uuid';
 import { UserRepository } from '../repositories/user.repo'
 import { AuthMethod } from 'src/modules/auth/entities/auth-method.entity';
+import { Todo } from 'src/modules/todo/entities/todo.entity';
 @Entity()
 export class User {
   [EntityRepositoryType]?: UserRepository
   @PrimaryKey({ type: 'uuid' })
   id: string;
+
+  @Property({ nullable: true })
+  userIdLine?: string;
+
 
   @Property({ type: 'text' })
   firstName: string;
@@ -35,6 +40,8 @@ export class User {
   @OneToMany(() => AuthMethod, (authMethod) => authMethod.user)
   authMethods? = new Collection<AuthMethod>(this, undefined, true)
 
+  @OneToMany(() => Todo, todo => todo.user)
+  todos = new Collection<Todo>(this);
 
   constructor(dto?: Partial<User>) {
     this.id = uuidV4().toUpperCase();

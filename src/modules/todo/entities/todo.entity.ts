@@ -1,4 +1,5 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { User } from 'src/modules/users/entities/user.entity';
 import { v4 as uuidV4 } from 'uuid';
 
 @Entity()
@@ -6,8 +7,6 @@ export class Todo {
   @PrimaryKey({ type: 'uuid' })
   id: string;
 
-  @Property({ type: 'text' })
-  uuidUser: string;
 
   @Property({ type: 'text' })
   title: string;
@@ -23,6 +22,10 @@ export class Todo {
 
   @Property({ type: 'timestamp' })
   updatedAt?: Date;
+
+  
+  @ManyToOne(() => User)
+  user!: User;
 
   constructor(dto: Partial<Todo>) {
     this.id = uuidV4().toUpperCase();

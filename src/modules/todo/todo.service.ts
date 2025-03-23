@@ -7,7 +7,6 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import { Todo } from './entities/todo.entity';
 import { TodoRepository } from './repositories/user-product.repo';
 import ICurrentUser from '../auth/interfaces/current-user.interface';
-import * as line from '@line/bot-sdk';
 @Injectable()
 export class TodoService {
   constructor(private readonly todoRepository: TodoRepository) {}
@@ -16,8 +15,9 @@ export class TodoService {
     user: ICurrentUser,
     createTodoDto: CreateTodoRequestDto,
   ): Promise<CreateTodoResponseDto> {
+    
     const result = this.todoRepository.create({
-      uuidUser: user.id,
+      user: user.id,
       title: createTodoDto.title,
       dateTodoStart: createTodoDto.dateTodoStart,
       dateTodoEnd: createTodoDto.dateTodoEnd,
@@ -29,7 +29,7 @@ export class TodoService {
       success: true,
       result: {
         id: result.id,
-        uuidUser: result.uuidUser,
+        user: result.user.id,
         title: result.title,
         dateTodoStart: result.dateTodoStart,
         dateTodoEnd: result.dateTodoEnd,
@@ -53,7 +53,7 @@ export class TodoService {
   }
 
   async findOne(user: ICurrentUser): Promise<{ result: Todo[] }> {
-    const result = await this.todoRepository.find({ uuidUser: user.id });
+    const result = await this.todoRepository.find({ user: user.id });
     return { result };
   }
 

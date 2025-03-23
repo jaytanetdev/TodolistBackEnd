@@ -13,11 +13,20 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { UserRepository } from '../users/repositories/user.repo';
 import { AuthMethodRepository } from '../repositories/auth-method.repo';
+import { AuthLineController } from './line/line.controller';
+import { LineCodeVerifierService } from './line/line-code-verifier.service';
+import { LineAuthService } from './line/line-auth.service';
+import { LineTokenService } from './line/line-token.service';
+import { LineUserService } from './line/line-user.service';
+import { HttpModule } from '@nestjs/axios';
+import { SocialAuthService } from './line/social-auth.service';
+import { TokenService } from './line/token.service';
 
 @Module({
   imports: [
     MikroOrmModule.forFeature([AuthPassword, AuthMethod]),
     UsersModule,
+    HttpModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -38,14 +47,21 @@ import { AuthMethodRepository } from '../repositories/auth-method.repo';
     }),
   ],
 
-  controllers: [AuthController],
+  controllers: [AuthController,AuthLineController],
   providers: [
     AuthService,
     JwtStrategy,
     RefreshTokenStrategy,
     UserRepository,
     AuthMethodRepository,
+    SocialAuthService,
+    TokenService,
+
+    LineAuthService,
+    LineCodeVerifierService,
+    LineTokenService,
+    LineUserService
   ],
-  exports: [AuthService, JwtStrategy, RefreshTokenStrategy],
+  exports: [AuthService, JwtStrategy, RefreshTokenStrategy,SocialAuthService,TokenService],
 })
 export class AuthModule {}

@@ -9,13 +9,15 @@ import { TodoModule } from './modules/todo/todo.module';
 import { AuthModule } from './modules/auth/auth.module';
 import authConfig from './config/auth.config';
 import { NotificationModule } from './modules/notification/notification.module';
+import lineConfig from './config/line.config';
+import appConfig from './config/app.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [authConfig],
+      load: [authConfig,lineConfig,appConfig],
     }),
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule],

@@ -1,18 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { CreateNotificationRequestDto } from './dto/create-notification.dto';
 import { ApiOperation } from '@nestjs/swagger';
-import { CurrentUser } from 'src/decorators/current-user.decorator';
-import ICurrentUser from '../auth/interfaces/current-user.interface';
 
 @Controller('notification')
 export class NotificationController {
@@ -31,13 +20,10 @@ export class NotificationController {
 
   @Post('/notify/to/user')
   @ApiOperation({ summary: 'notify to user' })
-  async notifyToUser(
-    @CurrentUser() userId: string,
-    message: string,
-  ): Promise<{
+  async notifyToUser(@Body() dto: CreateNotificationRequestDto): Promise<{
     success: boolean;
   }> {
-    await this.notificationService.notifyToUser(userId, message);
+    await this.notificationService.notifyToUser(dto);
     return {
       success: true,
     };

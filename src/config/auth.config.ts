@@ -10,7 +10,7 @@ export type TAuthConfig = {
 
   refreshTokenSecret: string;
   resetPasswordTokenSecret: string;
-
+  resetPasswordTokenExpiresIn: string;
   accessTokenExpiresIn: string;
   refreshTokenExpiresIn: string;
 
@@ -49,10 +49,9 @@ export default registerAs(
       process.env.JWT_PRIVATE_KEY?.replace(/\\n/g, '\n') || '',
     accessTokenPublicKey:
       process.env.JWT_PUBLIC_KEY?.replace(/\\n/g, '\n') || '',
-
     refreshTokenSecret: process.env.JWT_REFRESH_SECRET || '',
     resetPasswordTokenSecret: process.env.JWT_RESET_PASSWORD_SECRET || '',
-
+    resetPasswordTokenExpiresIn: '50m',
     accessTokenExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '1m',
     refreshTokenExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
 

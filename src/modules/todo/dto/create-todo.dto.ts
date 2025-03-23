@@ -39,11 +39,12 @@ export class CreateTodoResultDto {
 
   @ApiProperty({
     example: '79E93CEA-A31B-45FD-9455-8E98C1C5972F',
+    description: 'User ID (UUID)',
     type: String,
   })
   @Expose()
-  uuidUser: string;
-
+  user: string;
+  
   @ApiProperty({
     example: 'กินข้าว',
     type: String,
