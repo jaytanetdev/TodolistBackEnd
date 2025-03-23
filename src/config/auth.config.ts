@@ -2,6 +2,9 @@ import { registerAs } from '@nestjs/config';
 import parse from 'parse-duration';
 
 export type TAuthConfig = {
+  channelAccessToken: string;
+  channelSecret: string;
+
   accessTokenPrivateKey: string;
   accessTokenPublicKey: string;
 
@@ -40,6 +43,8 @@ export type TAuthConfig = {
 export default registerAs(
   'auth',
   (): TAuthConfig => ({
+    channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN || '',
+    channelSecret: process.env.CHANNEL_SECRET || '',
     accessTokenPrivateKey:
       process.env.JWT_PRIVATE_KEY?.replace(/\\n/g, '\n') || '',
     accessTokenPublicKey:

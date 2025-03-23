@@ -2,14 +2,19 @@ import { Injectable } from '@nestjs/common';
 
 import * as line from '@line/bot-sdk';
 import { NotificationRepository } from './repositories/notification.repo';
+import { TAuthConfig } from 'src/config/auth.config';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class NotificationService {
   private client: line.Client;
-  constructor(private readonly notificationRepository: NotificationRepository) {
+  constructor(
+    private readonly notificationRepository: NotificationRepository,
+    private readonly configSvc: ConfigService,
+  ) {
+    const authConfig = this.configSvc.get<TAuthConfig>('auth');
     const config: line.ClientConfig = {
-      channelAccessToken:
-        'rrzDW6aFx2jqdIv5lSQ9tyU5wTZC3WRHM26fvW6znHerpCoa+rqcykMzapjzRvrz6mnXeNJtLkHCUFQ+UQD4CCLABI8IF94nYK+bN4S6EF7sNYyRAayskVNrg5NHsgxH2vdQ7EpN+eqgPMNQJQ0togdB04t89/1O/w1cDnyilFU=', // Access Token ที่ได้จาก LINE Developer
-      channelSecret: '71f344e2918cb97f731e26b6a1472c8e', // Channel Secret ที่ได้จาก LINE Developer
+      channelAccessToken: authConfig!.channelAccessToken,
+      channelSecret: authConfig!.channelSecret, 
     };
 
     // สร้าง instance ของ LINE client
@@ -50,13 +55,13 @@ export class NotificationService {
 
   async notifyWebHook(body: any): Promise<string> {
     const result = this.notificationRepository.create({
-      responseLineNoti: body??'123',
+      responseLineNoti: body ?? '123',
     });
 
     await this.notificationRepository
       .getEntityManager()
       .persistAndFlush(result);
 
-    return `Message sent to user: ${body??123}`;
+    return `Message sent to user: ${body ?? 123}`;
   }
 }
