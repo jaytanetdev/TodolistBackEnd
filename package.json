@@ -24,6 +24,7 @@
     "migration:status": "mikro-orm migration:status"
   },
   "dependencies": {
+    "@line/bot-sdk": "^9.7.1",
     "@mikro-orm/core": "^6.4.4",
     "@mikro-orm/migrations": "^6.4.4",
     "@mikro-orm/nestjs": "^6.0.2",

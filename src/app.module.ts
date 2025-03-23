@@ -8,6 +8,7 @@ import { UsersModule } from './modules/users/users.module';
 import { TodoModule } from './modules/todo/todo.module';
 import { AuthModule } from './modules/auth/auth.module';
 import authConfig from './config/auth.config';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -37,7 +38,9 @@ import authConfig from './config/auth.config';
     }),
     UsersModule,
     TodoModule,
-    AuthModule
+    AuthModule,
+    NotificationModule
+    
   ],
   controllers: [AppController],
   providers: [AppService],

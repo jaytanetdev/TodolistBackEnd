@@ -4,12 +4,10 @@ import {
   CreateTodoResponseDto,
 } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { EntityManager } from '@mikro-orm/core';
 import { Todo } from './entities/todo.entity';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { TodoRepository } from './repositories/user-product.repo';
 import ICurrentUser from '../auth/interfaces/current-user.interface';
-
+import * as line from '@line/bot-sdk';
 @Injectable()
 export class TodoService {
   constructor(private readonly todoRepository: TodoRepository) {}
