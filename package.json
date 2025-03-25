@@ -47,6 +47,7 @@
     "class-validator": "^0.14.1",
     "compression": "^1.7.5",
     "cookie-parser": "^1.4.7",
+    "dayjs": "^1.11.13",
     "helmet": "^8.0.0",
     "nest-cli": "^0.0.5",
     "nestjs-cls": "^5.0.0",
