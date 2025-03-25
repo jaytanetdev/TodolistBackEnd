@@ -12,7 +12,6 @@ export class User {
   @Property({ nullable: true })
   userIdLine?: string;
 
-
   @Property({ type: 'text' })
   firstName: string;
 

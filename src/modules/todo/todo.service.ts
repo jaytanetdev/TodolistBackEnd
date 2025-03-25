@@ -15,7 +15,6 @@ export class TodoService {
     user: ICurrentUser,
     createTodoDto: CreateTodoRequestDto,
   ): Promise<CreateTodoResponseDto> {
-    
     const result = this.todoRepository.create({
       user: user.id,
       title: createTodoDto.title,

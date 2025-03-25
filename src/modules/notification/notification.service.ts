@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-
+const dayjs = require('dayjs');
 import * as line from '@line/bot-sdk';
 import { NotificationRepository } from './repositories/notification.repo';
 import { TAuthConfig } from 'src/config/auth.config';
@@ -61,20 +61,36 @@ export class NotificationService {
       responseLineNoti: body.events[0].source.userId,
     });
 
-    const user = await this.UserRepo.findOne(
-      {
-        userIdLine: body.events[0].source.userId,
-      },
-      {
-        populate: ['todos'], 
-      },
-    );
-    
-    console.log(user);
     await this.notificationRepository
       .getEntityManager()
       .persistAndFlush(result);
 
-    return `Message sent to user: ${body ?? 123}`;
+    if (body.events[0].message.text === 'todo') {
+      const user = await this.UserRepo.findOne(
+        {
+          userIdLine: body.events[0].source.userId,
+        },
+        {
+          populate: ['todos'],
+        },
+      );
+
+      let todolist = '';
+      user?.todos.map((item) => {
+        const formattedStartDate = dayjs(item.dateTodoStart).format('HH:mm');
+        const formattedEndDate = dayjs(item.dateTodoEnd).format('HH:mm');
+        todolist += `${item.title} ${formattedStartDate} - ${formattedEndDate}\n`;
+      });
+      const messageSendToUser: line.TextMessage = {
+        type: 'text',
+        text: todolist,
+      };
+      await this.client.pushMessage(
+        body.events[0].source.userId,
+        messageSendToUser,
+      );
+    }
+
+    return 'success';
   }
 }
